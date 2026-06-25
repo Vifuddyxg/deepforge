@@ -1,0 +1,37 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14171f"/>
+      <stop offset="1" stop-color="#0a0b0f"/>
+    </linearGradient>
+    <linearGradient id="gem" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5b9bff"/>
+      <stop offset="1" stop-color="#a06bff"/>
+    </linearGradient>
+    <linearGradient id="gemDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3f6fd6"/>
+      <stop offset="1" stop-color="#7d49e0"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="26" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="1024" height="1024" rx="232" ry="232" fill="url(#bg)"/>
+  <rect x="8" y="8" width="1008" height="1008" rx="226" ry="226" fill="none" stroke="#2a2f3a" stroke-width="3"/>
+
+  <g filter="url(#glow)">
+    <!-- gem: table top, crown facets, pavilion point (depth) -->
+    <polygon points="512,176 760,392 512,848 264,392" fill="url(#gem)"/>
+    <!-- right pavilion facet, darker for 3D depth -->
+    <polygon points="512,392 760,392 512,848" fill="url(#gemDark)" opacity="0.55"/>
+    <!-- crown facet lines -->
+    <g stroke="#dce6ff" stroke-width="6" fill="none" opacity="0.5" stroke-linejoin="round">
+      <polyline points="264,392 512,392 760,392"/>
+      <line x1="512" y1="176" x2="512" y2="392"/>
+      <line x1="264" y1="392" x2="512" y2="848"/>
+      <line x1="760" y1="392" x2="512" y2="848"/>
+    </g>
+  </g>
+</svg>

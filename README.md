@@ -115,6 +115,33 @@ Then in the app: **Open** a project folder, write a product goal, and press **St
 
 **Requirements:** Node 18+ and git.
 
+## Open the app
+
+Same commands on **Windows, macOS, and Linux** — run them from the `deepforge` folder:
+
+```bash
+npm run gui     # desktop app (GUI)
+npm start       # terminal app (CLI)
+```
+
+## Build a desktop installer (optional)
+
+Want a real double-click app with its own icon instead of running from source? Build a
+native installer. The whole icon set (Windows `.ico`, macOS `.icns`, Linux `.png`) is
+generated automatically from the single file `build/icon.png` — replace that file to
+rebrand. Build on the **same OS you're targeting**:
+
+```bash
+npm install            # first time only
+npm run dist:win       # -> dist/DeepForge-Setup-*.exe     (run on Windows)
+npm run dist:mac       # -> dist/DeepForge-*.dmg           (run on macOS)
+npm run dist:linux     # -> dist/DeepForge-*.AppImage      (run on Linux)
+```
+
+The installer carries the icon on the executable, in the Start menu / Dock, and on the
+running window. Builds aren't code-signed, so the OS shows a one-time warning the first
+time you open them (Windows: "More info" → "Run anyway"; macOS: right-click → "Open").
+
 ## Providers
 
 DeepForge can drive three different agent backends. Set `provider` in the project's

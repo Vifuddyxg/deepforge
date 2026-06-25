@@ -10,6 +10,8 @@ const { runAgent } = require('./agent');
 
 let win = null;
 
+const iconPath = path.join(__dirname, '..', '..', 'build', 'icon.png');
+
 function createWindow() {
   win = new BrowserWindow({
     width: 1280,
@@ -18,6 +20,7 @@ function createWindow() {
     minHeight: 640,
     backgroundColor: '#0e0f13',
     title: 'DeepForge',
+    ...(fs.existsSync(iconPath) ? { icon: iconPath } : {}),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
