@@ -13,7 +13,9 @@ that rots as it grows.
 
 ## What it looks like
 
-![DeepForge overview — project, controls, and live activity](docs/screenshots/overview.png)
+![DeepForge — projects, run controls, and About-this-project panel while idle](docs/screenshots/deepforge1.png)
+
+![DeepForge — a build running, with the live activity stream cycling through tasks](docs/screenshots/deepforge2.png)
 
 The left panel drives a run: **What to work on next** (a directive applied next cycle),
 **Start — work all day** / **Build the whole roadmap**, and an **About this project**
