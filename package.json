@@ -1,0 +1,48 @@
+{
+  "name": "deepforge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desktop orchestrator that builds deep software with always-fresh Claude Code agents. Press a button, it continues where it left off and runs fresh cycles until you toggle it off.",
+  "main": "src/main/main.js",
+  "bin": {
+    "deepforge-tui": "src/tui.js"
+  },
+  "scripts": {
+    "start": "node src/tui.js",
+    "tui": "node src/tui.js",
+    "gui": "electron .",
+    "check": "node --check src/main/main.js && node --check src/tui.js && node -e \"require('./src/main/orchestrator')\" && echo ok",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^42.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.deepforge.app",
+    "productName": "DeepForge",
+    "directories": { "output": "dist" },
+    "files": ["src/**/*", "package.json"],
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.developer-tools"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Development"
+    }
+  }
+}

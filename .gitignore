@@ -1,0 +1,9 @@
+node_modules/
+dist/
+out/
+*.log
+
+# tooling / OS cruft — keep out of the public repo
+.claude-flow/
+.DS_Store
+Thumbs.db

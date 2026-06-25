@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
+  <title>DeepForge</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="no-project">
+  <header class="topbar">
+    <div class="brand"><span class="logo">◆</span> DeepForge</div>
+    <span id="connBadge" class="conn checking" title="Claude CLI connection">● checking…</span>
+    <div class="status">
+      <span id="cost" class="cost" title="Estimated usage this run (cost-equivalent). On a Claude subscription this is NOT a real charge — just consumption against your usage limit. Run /usage in Claude Code to see remaining limits.">~$0.00 est.</span>
+      <span id="statusBadge" class="badge idle">idle</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT: project + controls -->
+    <aside class="sidebar">
+      <div class="card">
+        <div class="card-head"><span>Projects</span><button id="pickBtn" class="btn small">+ Open</button></div>
+        <div id="projectList" class="projlist"></div>
+      </div>
+
+      <div id="controls" class="card controls">
+        <div class="proj-title"><span id="projName">—</span></div>
+        <input id="projPath" class="pathline" placeholder="" readonly />
+
+        <label class="lbl">What should it build?</label>
+        <textarea id="goal" class="textarea" rows="4" placeholder="Describe the product to build with real depth…"></textarea>
+        <button id="saveGoalBtn" class="btn ghost tiny">Save goal</button>
+
+        <button id="toggleBtn" class="toggle" disabled>▶ Start — work all day</button>
+        <button id="roadmapBtn" class="toggle secondary" disabled>🏁 Build the whole roadmap</button>
+        <p class="hint">Both build task after task in fresh contexts. <b>Work all day</b> keeps going (and may extend the roadmap) until you stop. <b>Build the whole roadmap</b> works only through the existing roadmap and stops when it's all done.</p>
+
+        <button id="advToggle" class="adv-toggle">⚙ Advanced settings ▾</button>
+        <div id="advBody" class="adv-body hidden">
+          <label class="switch-row">
+            <span>Auto-optimize model per task</span>
+            <input id="autoRoute" type="checkbox" checked />
+          </label>
+          <p class="microhint">Claude picks Haiku / Sonnet / Opus per task by complexity, and skips review on trivial work.</p>
+          <div class="grid2">
+            <div>
+              <label class="lbl">Effort (manual mode)</label>
+              <select id="effort" class="input">
+                <option value="high">high</option><option value="max">max</option>
+                <option value="medium">medium</option><option value="low">low</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Force model (blank = auto)</label>
+              <input id="model" class="input" placeholder="auto" />
+            </div>
+            <div>
+              <label class="lbl">Max cycles (0 = all day)</label>
+              <input id="maxCycles" class="input" type="number" min="0" value="0" />
+            </div>
+            <div>
+              <label class="lbl">Depth-first</label>
+              <select id="depthFirst" class="input"><option value="true">on</option><option value="false">off</option></select>
+            </div>
+          </div>
+        </div>
+
+        <label class="lbl steer-lbl">Steer the architect (applied next cycle)</label>
+        <textarea id="directive" class="textarea" rows="2" placeholder="e.g. harden auth before new features…"></textarea>
+        <button id="sendDirective" class="btn small full">Send directive</button>
+      </div>
+    </aside>
+
+    <!-- RIGHT: activity + plan + docs -->
+    <section class="main">
+      <div id="welcome" class="welcome">
+        <div class="welcome-inner">
+          <div class="welcome-logo">◆</div>
+          <h1>Welcome to DeepForge</h1>
+          <p>Pick a project and press Start. DeepForge builds it task by task with always-fresh agents, verifies every step, and never loses your place.</p>
+          <button id="welcomeOpen" class="toggle welcome-btn">+ Open a project</button>
+        </div>
+      </div>
+
+      <div id="workspace" class="workspace">
+        <div id="nowline" class="nowline"><span class="dot-idle"></span><span class="now-text">Idle — press Start to begin.</span></div>
+        <div class="tabs">
+          <button class="tab active" data-tab="activity">Activity</button>
+          <button class="tab" data-tab="plan">Plan</button>
+          <button class="tab" data-tab="session">Resume</button>
+          <button class="tab" data-tab="roadmap">Roadmap</button>
+          <button class="tab" data-tab="state">State</button>
+          <button class="tab" data-tab="decisions">Decisions</button>
+          <button id="clearLog" class="btn ghost tiny clearbtn">clear log</button>
+        </div>
+        <div class="tabbody">
+          <div id="tab-activity" class="tabpane active"><div id="log" class="log"></div></div>
+          <div id="tab-plan" class="tabpane"><div id="plan" class="plan"></div></div>
+          <div id="tab-session" class="tabpane"><pre id="session" class="doc"></pre></div>
+          <div id="tab-roadmap" class="tabpane"><pre id="roadmap" class="doc"></pre></div>
+          <div id="tab-state" class="tabpane"><pre id="state" class="doc"></pre></div>
+          <div id="tab-decisions" class="tabpane"><pre id="decisions" class="doc"></pre></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Setup wizard: connect to Claude / Codex without a terminal -->
+  <div id="setupOverlay" class="overlay hidden">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Connect DeepForge to AI</h2>
+        <button id="setupClose" class="btn ghost tiny">✕</button>
+      </div>
+      <p class="modal-sub">DeepForge needs <b>one</b> AI agent installed and logged in. Pick one below — the buttons do it for you, no terminal typing.</p>
+
+      <div class="setup-row nodewarn">
+        <div class="setup-info"><b>Node.js</b> <span class="muted">(needed to install Claude/Codex)</span><span id="nodeStatus" class="setup-stat">checking…</span></div>
+        <button id="nodeBtn" class="btn small hidden">Download Node.js</button>
+      </div>
+
+      <div class="setup-card">
+        <div class="setup-info"><b>Claude Code</b> <span class="tag">recommended</span><span id="claudeStatus" class="setup-stat">checking…</span></div>
+        <div class="setup-actions">
+          <button id="claudeInstall" class="btn small">Install</button>
+          <button id="claudeLogin" class="btn small ghost">Log in</button>
+        </div>
+      </div>
+
+      <div class="setup-card">
+        <div class="setup-info"><b>OpenAI Codex</b><span id="codexStatus" class="setup-stat">checking…</span></div>
+        <div class="setup-actions">
+          <button id="codexInstall" class="btn small">Install</button>
+          <button id="codexLogin" class="btn small ghost">Log in</button>
+        </div>
+      </div>
+
+      <div class="setup-card">
+        <div class="setup-info"><b>Ollama</b> <span class="tag muted">local · text-only</span><span id="ollamaStatus" class="setup-stat">checking…</span></div>
+        <div class="setup-actions"><button id="ollamaBtn" class="btn small ghost">Get Ollama</button></div>
+      </div>
+
+      <p id="loginHint" class="login-hint hidden">A terminal window opened to finish login (a browser may pop up). If nothing opened, open a terminal and run the command shown, then press <b>Re-check</b>.</p>
+      <pre id="setupLog" class="setup-log hidden"></pre>
+
+      <div class="modal-foot">
+        <button id="setupRecheck" class="btn small">↻ Re-check</button>
+        <button id="setupDone" class="toggle setup-done">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
