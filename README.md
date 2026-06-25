@@ -2,10 +2,23 @@
 
 Desktop orchestrator that builds **deep** software with **always-fresh** Claude Code agents.
 
+> **Status: early / unproven.** The architecture is complete and the GUI runs, but the
+> orchestrator loop hasn't been validated end-to-end on a real build yet. Treat it as a
+> work-in-progress, not a finished tool.
+
 You open a project, set a goal, press **Start**, and DeepForge runs cycle after cycle —
 each task in a brand-new Claude context — until you toggle it off. It picks up exactly
 where it left off, because all memory lives in versioned files, not in a chat history
 that rots as it grows.
+
+## What it looks like
+
+![DeepForge overview — project, controls, and live activity](docs/screenshots/overview.png)
+
+The left panel drives a run: **What to work on next** (a directive applied next cycle),
+**Start — work all day** / **Build the whole roadmap**, and an **About this project**
+description you can write or generate with AI. The right panel streams live activity,
+the plan, the roadmap, and project state.
 
 ## The problem it solves
 

@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('df', {
   installCli: (which) => ipcRenderer.invoke('install-cli', which),
   openLogin: (which) => ipcRenderer.invoke('open-login', which),
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
+  generateDescription: (p) => ipcRenderer.invoke('generate-description', p),
   saveConfig: (path, patch) => ipcRenderer.invoke('save-config', { path, patch }),
   start: (p, mode) => ipcRenderer.invoke('start', { path: p, mode }),
   stop: () => ipcRenderer.invoke('stop'),

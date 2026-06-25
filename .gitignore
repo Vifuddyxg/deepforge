@@ -3,6 +3,9 @@ dist/
 out/
 *.log
 
+# per-project orchestrator runtime state (briefs, plan, session, logs)
+.orchestrator/
+
 # tooling / OS cruft — keep out of the public repo
 .claude-flow/
 .DS_Store

@@ -6,6 +6,7 @@ const { execFile, spawn } = require('child_process');
 const state = require('./state');
 const registry = require('./registry');
 const orchestrator = require('./orchestrator');
+const { runAgent } = require('./agent');
 
 let win = null;
 
@@ -146,6 +147,40 @@ ipcMain.handle('open-login', async (_e, which) => {
 });
 
 ipcMain.handle('open-external', async (_e, url) => { shell.openExternal(String(url)); return true; });
+
+// Generate a short "About this project" blurb with the configured AI agent.
+// Feeds README + package.json + goal as cheap context so it's fast and works for
+// any provider (incl. text-only ollama), then saves it to config.description.
+ipcMain.handle('generate-description', async (_e, p) => {
+  if (!p || !fs.existsSync(p)) return { ok: false, error: 'no project' };
+  const cfg = state.ensure(p);
+  const pick = (f) => { try { return fs.readFileSync(path.join(p, f), 'utf8'); } catch (_) { return ''; } };
+  const readme = pick('README.md').slice(0, 2500);
+  let pkg = '';
+  try { const j = JSON.parse(pick('package.json') || '{}'); pkg = [j.name, j.description].filter(Boolean).join(' — '); } catch (_) {}
+  const prompt =
+    'Write the "About this project" description for a desktop dashboard. ' +
+    'Based on the material below (read more source files if helpful), say in plain language what this project IS — ' +
+    'what it does, for whom, and what it should become. 2–4 sentences, under 80 words, no markdown, no preamble. ' +
+    'Output only the description.\n\n' +
+    (pkg ? `package.json: ${pkg}\n` : '') +
+    (readme ? `README excerpt:\n${readme}\n` : '') +
+    (pkg || readme ? '' : `Project folder: ${path.basename(p)} (no README/package.json found — read a few source files first).\n`) +
+    '\nDescription:';
+  const r = await runAgent({
+    provider: cfg.provider || 'claude',
+    cwd: p,
+    prompt,
+    model: cfg.model || undefined,
+    maxBudgetUsd: 0.5,
+    allowedTools: ['Read', 'Glob', 'Grep'],
+    timeoutMs: 1000 * 60 * 3
+  });
+  if (!r || !r.ok) return { ok: false, error: (r && r.error) || 'generation failed' };
+  const text = String(r.result || '').trim().replace(/^["']+|["']+$/g, '').trim();
+  if (text) state.updateConfig(p, { productGoal: text });
+  return { ok: !!text, text, error: text ? null : 'empty result' };
+});
 
 ipcMain.handle('start', async (_e, { path: p, mode }) => { orchestrator.start(p, mode); return true; });
 ipcMain.handle('stop', async () => { orchestrator.requestStop(); return true; });

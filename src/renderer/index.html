@@ -28,9 +28,9 @@
         <div class="proj-title"><span id="projName">—</span></div>
         <input id="projPath" class="pathline" placeholder="" readonly />
 
-        <label class="lbl">What should it build?</label>
-        <textarea id="goal" class="textarea" rows="4" placeholder="Describe the product to build with real depth…"></textarea>
-        <button id="saveGoalBtn" class="btn ghost tiny">Save goal</button>
+        <label class="lbl">What to work on next <span class="lbl-sub">— applied next cycle</span></label>
+        <textarea id="directive" class="textarea" rows="3" placeholder="What should DeepForge work on next? Leave empty to let the architect pick from the roadmap."></textarea>
+        <button id="sendDirective" class="btn small full">Send</button>
 
         <button id="toggleBtn" class="toggle" disabled>▶ Start — work all day</button>
         <button id="roadmapBtn" class="toggle secondary" disabled>🏁 Build the whole roadmap</button>
@@ -66,9 +66,14 @@
           </div>
         </div>
 
-        <label class="lbl steer-lbl">Steer the architect (applied next cycle)</label>
-        <textarea id="directive" class="textarea" rows="2" placeholder="e.g. harden auth before new features…"></textarea>
-        <button id="sendDirective" class="btn small full">Send directive</button>
+        <div class="about">
+          <div class="about-head">
+            <label class="lbl">About this project</label>
+            <button id="genDescBtn" class="btn ghost tiny">✨ Generate with AI</button>
+          </div>
+          <textarea id="goal" class="textarea" rows="4" placeholder="What this project is and what it should become. Write it, or let AI generate it."></textarea>
+          <button id="saveGoalBtn" class="btn ghost tiny">Save</button>
+        </div>
       </div>
     </aside>
 

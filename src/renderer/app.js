@@ -13,6 +13,7 @@ async function applySnapshot(snap) {
   $('projName').textContent = c.name || snap.path.split('/').pop();
   $('projPath').value = snap.path;
   $('goal').value = c.productGoal || '';
+  $('directive').value = '';
   $('autoRoute').checked = c.autoRoute !== false;
   $('effort').value = c.effort || 'high';
   $('model').value = c.model || '';
@@ -69,6 +70,31 @@ async function saveConfig() {
   project.config = await api.saveConfig(project.path, patch);
   flash($('saveGoalBtn'), 'Saved ✓');
 }
+
+// ---- About this project: AI-generate the description (saved into productGoal) ----
+$('genDescBtn').onclick = async () => {
+  if (!project) return;
+  const btn = $('genDescBtn');
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = '✨ Generating…';
+  let done = '';
+  try {
+    const r = await api.generateDescription(project.path);
+    if (r && r.ok && r.text) {
+      $('goal').value = r.text;
+      if (project.config) project.config.productGoal = r.text;
+      done = '✓ Generated';
+    } else {
+      done = '✗ ' + ((r && r.error) || 'failed');
+    }
+  } catch (e) {
+    done = '✗ failed';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = done || old;
+    setTimeout(() => { btn.textContent = old; }, 1400);
+  }
+};
 for (const id of ['autoRoute', 'effort', 'model', 'maxCycles', 'depthFirst']) $(id).addEventListener('change', saveConfig);
 
 // advanced collapse
